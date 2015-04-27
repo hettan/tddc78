@@ -278,7 +278,7 @@ int main(int argc, char** argv)
     }
 
     /* read file */
-    if(read_ppm ("../test_img/im1.ppm", &xsize, &ysize, &colmax, (char *) src) != 0)
+    if(read_ppm (argv[2], &xsize, &ysize, &colmax, (char *) src) != 0)
       return 1;
     
     if (colmax > 255) {
