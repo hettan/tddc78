@@ -84,6 +84,9 @@ void blurfilter(const int xsize, const int ysize, pixel* src, const int radius, 
       pix(src,x,y, xsize)->b = b/n;
     }
   }
+  
+  for(y=0; y<ysize; y++)
+    printf("%d", pix(src, xsize-1, y, xsize)->r);
 
 }
 

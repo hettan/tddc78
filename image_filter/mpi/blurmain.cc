@@ -296,6 +296,7 @@ int main(int argc, char** argv)
   double* weights= new double[radius];
   get_gauss_weights(radius, weights);
 
+  //remove?
   MPI_Barrier(MPI_COMM_WORLD);
   
   MPI_Bcast(&xsize, 1, MPI_INT, 0, MPI_COMM_WORLD);

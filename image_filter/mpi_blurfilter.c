@@ -50,3 +50,4 @@ void blurfilter(const int xsize, const int ysize,
       pix(dst,x,y, xsize)->b = b/n;
     }
   }
+}

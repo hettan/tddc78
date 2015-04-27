@@ -24,9 +24,9 @@
 struct particle {
   pcord_t  pcord;
   int ptype;        /* Used to simulate mixing of gases */ 
+  particle* prev;
+  particle* next;
 };
-
-
 
 typedef struct particle particle_t;
 
