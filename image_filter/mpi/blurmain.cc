@@ -8,7 +8,7 @@
 #define MAX_RAD 1000
 #define MAX_X 1.33
 #define Pi 3.14159
-#define MAX_PIXELS (1000*1000)
+#define MAX_PIXELS (3000*3000)
 
 using namespace std;
 
