@@ -2,7 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <time.h>
-
+#include <stdlib.h>
 #include "ppmio.h"
 
 #define MAX_RAD 1000
