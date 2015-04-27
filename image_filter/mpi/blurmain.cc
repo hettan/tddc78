@@ -8,7 +8,7 @@
 #define MAX_RAD 1000
 #define MAX_X 1.33
 #define Pi 3.14159
-#define MAX_PIXELS (3000*3000)
+//#define MAX_PIXELS (3000*3000)
 
 using namespace std;
 
@@ -297,8 +297,9 @@ int main(int argc, char** argv)
   get_gauss_weights(radius, weights);
 
   //remove?
-  MPI_Barrier(MPI_COMM_WORLD);
-  
+  //MPI_Barrier(MPI_COMM_WORLD);
+
+  //Broadcast the variables from root to the other processes
   MPI_Bcast(&xsize, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&ysize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
