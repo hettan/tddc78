@@ -269,21 +269,21 @@ int main(int argc, char** argv)
 
     if (argc != 4) {
 	fprintf(stderr, "Usage: %s radius infile outfile\n", argv[0]);
-	exit(1);
+	return 0;
     }
     radius = atoi(argv[1]);
     if((radius > MAX_RAD) || (radius < 1)) {
 	fprintf(stderr, "Radius (%d) must be greater than zero and less then %d\n", radius, MAX_RAD);
-	exit(1);
+	return 1;
     }
 
     /* read file */
     if(read_ppm ("../test_img/im1.ppm", &xsize, &ysize, &colmax, (char *) src) != 0)
-      exit(1);
+      return 1;
     
     if (colmax > 255) {
       cerr << "Too large maximum color-component value" << endl;
-      exit(1);
+      return 1;
     }
 
     cout << "Has read the image, generating coefficients" << endl;
@@ -319,7 +319,7 @@ int main(int argc, char** argv)
     
     cout << "Writing output file" << endl;
     if( write_ppm(argv[3], xsize, ysize, (char *)src) != 0)
-      exit(1);
+      return 1;
   }
 
   //cleanup
