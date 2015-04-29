@@ -21,8 +21,18 @@ double f_rand(double fMin, double fMax)
   return fMin + f * (fMax - fMin);
 }
 
+void insert_particle(particle_t* p , particle_t* arr)
+{
+  if(arr){
+    arr->prev = p;
+    p->next = arr;
+    p->prev = nullptr;
+  }
+  arr = p;
+}
+
 //Generate random values for n particles
-void init_particles(particle_t *particles, long n, int box_width, int box_height)
+void init_particles(particle_t* particles, long n, int box_width, int box_height)
 {
   srand(time(NULL));
   for(int i=0; i<n; i++){
@@ -50,6 +60,7 @@ void init_particles(particle_t *particles, long n, int box_width, int box_height
 }
 
 
+
 //Check for collition of other particels and walls, returning the wall_collide pressure
 float check_collition(particle_t *p1, particle_t *collitions, const cord_t wall, double time_steps)
 {
@@ -60,19 +71,18 @@ float check_collition(particle_t *p1, particle_t *collitions, const cord_t wall,
   while(p2){
     const float c = collide(&(p1->pcord), &((p2)->pcord));
     if( c != -1 ){
-      cout << "collition! " << endl 
+      /*''cout << "collition! " << endl 
 	   << "1: " << p1 << endl
-	   << "2: " << p2 << endl;
+	   << "2: " << p2 << endl;*/
       add_collitions(p1, p2, collitions);
       interact(&(p1->pcord), &(p2->pcord), c);
       break;
     }
     p2 = p2->next;
   }
-  
-  //If no collition move particle, p2 is used to check it last was reached or of break before.
-  if(!p2)
-    feuler(&(p1->pcord), time_steps);
+    //If no collition move particle, p2 is used to check it last was reached or of break before.
+  //  if(!p2)
+  //  feuler(&(p1->pcord), time_steps);
 
   //Return the pressure even though a wall havn't' been it (then it will be 0)
   return wall_collide(&(p1->pcord), wall);

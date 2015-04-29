@@ -142,7 +142,8 @@ int main (int argc, char ** argv) {
     if(write_ppm (argv[2], xsize, ysize, (char *)src) != 0)
       return 1;
   }
-  
+
+  //cleanup
   delete[] src;
   delete[] local_src;
 

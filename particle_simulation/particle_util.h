@@ -7,6 +7,8 @@
 
 double f_rand(double fMin, double fMax);
 
+void insert_particle(particle_t* p , particle_t* arr);
+
 //Generate random values for n particles
 void init_particles(particle_t *particles, long n, int box_width, int box_height);
 
