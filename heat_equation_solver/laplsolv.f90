@@ -24,22 +24,30 @@ program laplsolv
   ! Solve the linear system of equations using the Jacobi method
   call cpu_time(t0)
   
-  do k=1,maxiter
+  do k=1, maxiter
      
      tmp1=T(1:n,0)
      error=0.0D0
-     
+     !write(unit=*,fmt=*) 'Temperature of element T(1,0)  =',T(1,0)
+    
      do j=1,n
         tmp2=T(1:n,j)
         T(1:n,j)=(T(0:n-1,j)+T(2:n+1,j)+T(1:n,j+1)+tmp1)/4.0D0
         error=max(error,maxval(abs(tmp2-T(1:n,j))))
         tmp1=tmp2
+
+       
+        !if(j == 1) then
+        !   write(unit=*,fmt=*)k,': T(1,1)=',T(1,1)
+        !end if
+        
+        !write(unit=*,fmt=*)j,'row',T(1:n,j)
      end do
      
-     if (error<tol) then
-        exit
-     end if
-     
+     !if (error<tol) then
+     !   exit
+     !end if
+     !write(unit=*,fmt=*) 'Temperature of element T(n,n)  =',T(n-1,n-1)
   end do
   
   call cpu_time(t1)
