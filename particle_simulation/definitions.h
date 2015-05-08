@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<math.h>
+#include<string.h>
 
 #include "coordinate.h"
 #include "physics.h"

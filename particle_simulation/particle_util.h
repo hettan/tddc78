@@ -17,34 +17,26 @@ namespace std{
 
 double f_rand(double fMin, double fMax);
 
-void remove_particle(particle_t* p, particle_t*& arr);
-
-void insert_particles(particle_t* particles, const int count, particle_t*& arr);
+//Generate random values for n particles
+particle_t* init_particles(long n, int box_width, int box_height);
+void particles_cleanup(particle_t*& first);
 
 void insert_particle(particle_t* p , particle_t*& arr);
-
-void insert_particle_copy(particle_t* p, particle_t* arr, int index);
-
-void init_particles_send(particle** send);
-
-void del_particles_send(particle** send);
-
-//Generate random values for n particles
-void init_particles(particle_t* particles, long n, int box_width, int box_height);
-
-particle_t* init_particles_m(long n, int box_width, int box_height);
-
-float check_collition(particle_t* p1, particle_t*& collitions, const cord_t wall, const double time_steps);
-
-void init_particles(particle_t* particles, long n, int box_width, int box_height);
-
-void add_collitions(particle_t* p1, particle_t* p2, particle*& collitions);
-
+void insert_particles(particle_t* particles, const int count, particle_t*& arr);
+void insert_particle_copy(particle_t*& p, particle_t* arr, int index, particle_t*& particles_first, particle_t*& collitions);
+void remove_particle(particle_t* p, particle_t*& arr);
 void unlink_particle(particle_t* p);
-
 void particles_list_merge(particle_t*& dst, particle_t*& m);
 
 int get_size(particle_t* arr);
 
-void particles_cleanup(particle_t*& first);
+void init_particles_send(particle** send);
+void cleanup_particles_send(particle** send);
+
+float check_collition(particle_t* p1, particle_t*& collitions);
+void add_collitions(particle_t* p1, particle_t* p2, particle*& collitions);
+
+
+
+
 #endif
