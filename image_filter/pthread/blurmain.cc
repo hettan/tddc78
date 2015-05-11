@@ -105,7 +105,7 @@ int main (int argc, char ** argv) {
       return 7;
     }
     
-    cout << "Thread " << i << " done, status=" << status << endl;
+    //cout << "Thread " << i << " done, status=" << status << endl;
   }
 
   
@@ -138,7 +138,7 @@ int main (int argc, char ** argv) {
       return 7;
     }
     
-    cout << "Thread " << i << " done, status=" << status << endl;
+    //cout << "Thread " << i << " done, status=" << status << endl;
   }
   
   clock_gettime(CLOCK_REALTIME, &etime);

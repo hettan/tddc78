@@ -8,7 +8,6 @@
 #define MAX_RAD 1000
 #define MAX_X 1.33
 #define Pi 3.14159
-//#define MAX_PIXELS (3000*3000)
 
 using namespace std;
 
@@ -37,7 +36,6 @@ void init_pixel_type(MPI_Datatype& pixel_type)
   MPI_Type_commit(&pixel_type);
 }
 
-/* Requires that (num_proc%n) == 0. */
 void get_gauss_weights(const int n, double* work){
   const MPI_Comm com = MPI_COMM_WORLD;
   const int root = 0; //root process
@@ -71,8 +69,7 @@ void get_gauss_weights(const int n, double* work){
   }
   
   MPI_Allgatherv(&work_proc, work_size_proc, MPI_DOUBLE, work,
-  		 recv_count, displs, MPI_DOUBLE, com);
-  
+  		 recv_count, displs, MPI_DOUBLE, com);  
 }
 
 pixel* pix(pixel* image, const int xx, const int yy, const int xsize)
@@ -122,6 +119,7 @@ void blurfilter(const int xsize, const int ysize,
   MPI_Scatter(src, local_size*pixel_type_size, pixel_type, local_src,
 	      local_size*pixel_type_size, pixel_type, root, com);
 
+  //The last process should get the leftover pixels
   if( (myid == root) && (ysize % num_proc) != 0 ){
     const int leftover_size = (ysize % num_proc)*xsize;
     const int leftover_offset = ysize*xsize - leftover_size;
@@ -129,7 +127,6 @@ void blurfilter(const int xsize, const int ysize,
     MPI_Send(src+leftover_offset, leftover_size*pixel_type_size,
 	     pixel_type, num_proc-1, 0, com);
   }
-
   else if( (myid == num_proc-1) && (ysize % num_proc) != 0){
     const int leftover_size = (ysize % num_proc)*xsize;
 
@@ -137,6 +134,7 @@ void blurfilter(const int xsize, const int ysize,
 	     pixel_type, 0, 0, com, &status);
   }    
   
+  //Horizontal blur
   for (y=0; y<row_interval; y++) {
     for (x=0; x<xsize; x++) {
       r = w[0] * pix(local_src, x, y, xsize)->r;
@@ -190,7 +188,8 @@ void blurfilter(const int xsize, const int ysize,
     MPI_Send(local_dst+(row_interval*xsize), data_size,
 	     pixel_type, myid+1, 2, com);
   }
-  
+
+  //Set the min-max bounderies
   int min, max;
   if(myid == 0){
     min=radius;
@@ -204,7 +203,8 @@ void blurfilter(const int xsize, const int ysize,
     min=0;
     max=row_interval + (2*radius);
   }
-  
+
+  //Vertical blur
   for (y=radius; y<row_interval+radius; y++) {
     for (x=0; x<xsize; x++) {
       r = w[0] * pix(local_dst, x, y, xsize)->r;
@@ -295,9 +295,6 @@ int main(int argc, char** argv)
   /* filter */
   double* weights= new double[radius];
   get_gauss_weights(radius, weights);
-
-  //remove?
-  //MPI_Barrier(MPI_COMM_WORLD);
 
   //Broadcast the variables from root to the other processes
   MPI_Bcast(&xsize, 1, MPI_INT, 0, MPI_COMM_WORLD);

@@ -102,6 +102,7 @@ int main (int argc, char ** argv) {
 
   pixel *local_src = new pixel[local_y*xsize];
 
+  //Calculate the send information needed by MPI_Scatterv
   int send_count[num_proc];
   int disp[num_proc];
   int disp_size = 0;

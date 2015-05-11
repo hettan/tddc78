@@ -67,7 +67,7 @@ void* blurfilter_x(void* t_param){
     }
   }
   
-  return nullptr;
+  pthread_exit(0);
 }
 
 void* blurfilter_y(void* t_param){
@@ -115,11 +115,10 @@ void* blurfilter_y(void* t_param){
     }
   }
   
-  for(y=y_start; y<y_end; y++)
-    printf("%d", pix(src, xsize-1, y, xsize)->r);
+  //for(y=y_start; y<y_end; y++)
+  //  printf("%d", pix(src, xsize-1, y, xsize)->r);
   
-  return nullptr;
-  
+  pthread_exit(0);
 }
 
 

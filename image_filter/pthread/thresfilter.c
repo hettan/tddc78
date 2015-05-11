@@ -1,3 +1,5 @@
+#include <pthread.h>
+
 #include "thresfilter.h"
 
 void* thresfilter(void* t_param){
@@ -27,6 +29,5 @@ void* thresfilter(void* t_param){
       src[i].r = src[i].g = src[i].b = 255;
     }
   }
-
-  return nullptr;
+  pthread_exit(0);
 }

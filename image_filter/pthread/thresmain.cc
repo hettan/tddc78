@@ -85,7 +85,7 @@ int main (int argc, char ** argv) {
       return 7;
     }
     
-    cout << "Thread " << i << " done, status=" << status << endl;
+    //    cout << "Thread " << i << " done, status=" << status << endl;
   }
 
   clock_gettime(CLOCK_REALTIME, &etime);
@@ -99,6 +99,8 @@ int main (int argc, char ** argv) {
   if(write_ppm (argv[3], xsize, ysize, (char *)src) != 0)
     return 5;
 
+  //cleanup
+  delete[] src;
 
   return(0);
 }
