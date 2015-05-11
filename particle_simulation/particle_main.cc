@@ -2,6 +2,7 @@
 #include <mpi.h>
 #include <time.h>
 #include <math.h>
+#include <sstream>
 
 #include "coordinate.h"
 #include "physics.h"
@@ -11,6 +12,9 @@
 #define BOX_WIDTH 10000
 #define BOX_HEIGHT 10000
 #define MAX_TIME 1000.0
+
+//Triolith doesn't have c++11 lib in mpi version
+#define nullptr NULL
 
 using namespace std;
 
@@ -60,40 +64,60 @@ void get_neighbours(const MPI_Comm& g_com, int myid, int* neighbours)
   MPI_Cart_shift(g_com, 0, 1, &myid, &(neighbours[3]));
 }
 
+
+string to_string(const int i){
+  ostringstream oss;
+  oss << i;
+  return oss.str();
+}
+
+int to_int(const string str){
+  int i;
+  istringstream (str) >> i;
+  return i;
+}
+
+//Send particles to neighbours
 void send_to_neighbour(particle* data, const int count, const int dst,
 		       MPI_Request* requests, const int myid){
   //The unique tag
-  const int tag = stoi(to_string(dst) + to_string(myid));
+  const int tag = to_int(to_string(dst) + to_string(myid));
   const int size = count * sizeof(particle_t);
   MPI_Isend(data, size, MPI_BYTE, dst, tag, MPI_COMM_WORLD, requests);
 }
 
+//Checks if the particle is still in this box or need to be sent to a neighbour
 void prepare_send(particle_t*& p, particle_t** particles_send, int* particles_send_count, 
 		  particle_t*& particles_first, particle_t*& collitions, int& particle_count,
 		  const int local_xsize, const int local_ysize)
 {
+  //Left
   if(p->pcord.x < 0){
     insert_particle_copy(p, particles_send[0], particles_send_count[0]++, particles_first, collitions);
     particle_count--;
   }
+  //Right
   else if(p->pcord.x > local_xsize){
     insert_particle_copy(p, particles_send[1], particles_send_count[1]++, particles_first, collitions);
     particle_count--;
   }
+  //Up
   else if(p->pcord.y < 0){
     insert_particle_copy(p,  particles_send[2], particles_send_count[2]++, particles_first, collitions);
     particle_count--;
   }
+  //Down
   else if(p->pcord.y > local_ysize){
     insert_particle_copy(p,  particles_send[3], particles_send_count[3]++, particles_first, collitions);
     particle_count--;
   }      
 }
 
+//Receive particles from neigbours 
 particle_t* recv_from_neighbour(int& total_count, const int from, const int myid){
   
   //The unique tag
-  const int tag = stoi(to_string(myid) + to_string(from));
+  const int tag = to_int(to_string(myid) + to_string(from));
 
   MPI_Status status;
   MPI_Probe( from, tag, MPI_COMM_WORLD, &status);
@@ -119,7 +143,7 @@ void print_results(const float pressure, const long area,
        << "Magic constant R:  " << R << endl
        << "Temperature: " << temperature << endl;
 }
-
+ 
 int main(int argc, char** argv)
 {
   //MPI init
@@ -159,11 +183,9 @@ int main(int argc, char** argv)
     local_num_particles += num_particles%num_proc;
   }
   
-  //particle_t* particles_buff = new particle_t[num_particles];
   particle_t* particles_buff = init_particles(local_num_particles, local_xsize, local_ysize);
   particle_t* particles_first = particles_buff;
   
-  //init_particles(particles_first, local_num_particles, local_xsize, local_ysize);
   int particle_count = local_num_particles;
   
   //get neighbouring grids
@@ -184,7 +206,7 @@ int main(int argc, char** argv)
 
   //Main loop: for each time-step do following
   double time_steps = STEP_SIZE; //start at time 1 
-  while(time_steps < MAX_TIME){
+  while(time_steps < 2){//MAX_TIME){
     int col_counter=0;
     particle_t* collitions=nullptr;
     
@@ -261,7 +283,7 @@ int main(int argc, char** argv)
   //Calculate pressure
   MPI_Reduce(&local_pressure, &pressure, 1, MPI_DOUBLE, MPI_SUM, root, g_com);
 
-  if(myid == 0){
+  if(myid == root){
     clock_gettime(CLOCK_REALTIME, &etime);
     const int delta_time = ((etime.tv_sec - stime.tv_sec) 
 			    + 1e-9*(etime.tv_nsec - stime.tv_nsec));

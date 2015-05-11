@@ -9,6 +9,9 @@
 
 using namespace std;
 
+//Triolith doesn't have c++11 lib in mpi version
+#define nullptr NULL
+
 namespace std{
   ostream& operator<<(ostream& os, particle_t *p){
     os << "x=" << p->pcord.x << ", y=" << p->pcord.y 
@@ -76,7 +79,9 @@ void particles_cleanup(particle_t*& current)
 {
   particle_t* next;
 
+  int counter = 0;
   while(current){
+    cout << counter++ << endl;
     next = current->next;
     free(current);
     current = next;
@@ -112,7 +117,7 @@ void insert_particle_copy(particle_t*& p, particle_t* arr, int index,
 
   remove_particle(p, particles_first);
   remove_particle(p, collitions);
-  //free(p);
+  free(p);
 }
 
 void remove_particle(particle_t* p, particle_t*& arr)
