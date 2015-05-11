@@ -5,6 +5,8 @@
 
 using namespace std;
 
+#define uint unsigned int
+
 struct pixel
 {
   unsigned char r,g,b;
@@ -23,11 +25,10 @@ void init_pixel_type(MPI_Datatype& pixel_type)
   MPI_Type_commit(&pixel_type);
 }
 
-#define uint unsigned int
+
 //Calculate the sum of all pixels in src
 uint get_sum(const int xsize, const int ysize, pixel* src){
   uint sum, i, nump;
-  
   nump = xsize * ysize;
   
   for(i = 0, sum = 0; i < nump; i++)
@@ -37,7 +38,6 @@ uint get_sum(const int xsize, const int ysize, pixel* src){
 }
   
 void thresfilter(const int xsize, const int ysize, pixel* src, const int sum){  
-#define uint unsigned int
   uint psum, nump, i;
   nump = xsize * ysize;
 
@@ -120,7 +120,7 @@ int main (int argc, char ** argv) {
 	       local_src, send_count[myid], pixel_type, root, com);
     
   //Calculate the sum
-  const double local_sum = (double)get_sum(xsize, local_y, local_src);
+  double local_sum = (double)get_sum(xsize, local_y, local_src);
   double sum = 0;
   MPI_Allreduce(&local_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, com);
   sum = sum/(xsize*ysize);
@@ -142,10 +142,12 @@ int main (int argc, char ** argv) {
     
     if(write_ppm (argv[2], xsize, ysize, (char *)src) != 0)
       return 1;
+
+    //cleanup
+    delete[] src;
   }
 
-  //cleanup
-  delete[] src;
+  //cleanup local
   delete[] local_src;
 
   MPI_Finalize();
