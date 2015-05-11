@@ -81,7 +81,6 @@ void particles_cleanup(particle_t*& current)
 
   int counter = 0;
   while(current){
-    cout << counter++ << endl;
     next = current->next;
     free(current);
     current = next;
