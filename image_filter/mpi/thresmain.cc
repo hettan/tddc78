@@ -23,9 +23,9 @@ void init_pixel_type(MPI_Datatype& pixel_type)
   MPI_Type_commit(&pixel_type);
 }
 
+#define uint unsigned int
 //Calculate the sum of all pixels in src
 uint get_sum(const int xsize, const int ysize, pixel* src){
-#define uint unsigned int
   uint sum, i, nump;
   
   nump = xsize * ysize;
@@ -67,7 +67,7 @@ int main (int argc, char ** argv) {
   const int pixel_type_size = 3;
 
   int xsize, ysize, colmax;
-  pixel *src = nullptr;
+  pixel *src;
   if(myid == root){
     src = new pixel[MAX_PIXELS];
     /* Take care of the arguments */
