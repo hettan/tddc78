@@ -34,8 +34,6 @@ program laplsolv
   ! Solve the linear system of equations using the Jacobi method
   call cpu_time(t0)
 
-  ! Should be set on argv later
-  call omp_set_num_threads(num_threads)
 
   !Check arguments
   if(iargc() /= 1) then
@@ -47,6 +45,9 @@ program laplsolv
   !set num_threads
   call getarg(1, arg)
   read(arg, '(i10)' ) num_threads
+
+  ! Should be set on argv later
+  call omp_set_num_threads(num_threads)
 
   
   !Init array with the first iteration
