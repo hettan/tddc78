@@ -110,12 +110,12 @@ void blurfilter(const int xsize, const int ysize,
   const int row_start = row_interval*myid;
   const int local_size = row_interval*xsize;
   const int local_radius_size = radius*xsize;
-
-  pixel local_src[local_size];
+  
+  pixel* local_src = new pixel[local_size];
 
   //Allocate mem for the radius as well.
-  pixel local_dst[local_size+(2*local_radius_size)];
-  
+  pixel* local_dst = new pixel[local_size+(2*local_radius_size)];
+  cout << "7" << endl;
   MPI_Scatter(src, local_size*pixel_type_size, pixel_type, local_src,
 	      local_size*pixel_type_size, pixel_type, root, com);
 
@@ -249,7 +249,9 @@ void blurfilter(const int xsize, const int ysize,
   
   MPI_Gatherv(local_src, local_size*pixel_type_size, pixel_type, src,
 	     recv_count, displs, pixel_type, root, com);
-	     
+
+  delete[] local_src;
+  delete[] local_dst;
 }
 
 int main(int argc, char** argv)
@@ -263,7 +265,6 @@ int main(int argc, char** argv)
 
   int radius, xsize, ysize, colmax;
   pixel *src = new pixel[MAX_PIXELS];
-
   if(myid == 0){
     /* Take care of the arguments */
 
