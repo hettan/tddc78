@@ -36,11 +36,11 @@ program laplsolv
 
 
   !Check arguments
-  if(iargc() /= 1) then
-     call getarg(0, arg)
-     print *, 'usage ',arg,' num_proc'
-     stop
-  end if
+!  if(iargc() /= 1) then
+!     call getarg(0, arg)
+!     print *, 'usage ',arg,' num_proc'
+!     stop
+!  end if
 
   !set num_threads
   !call getarg(1, arg)
