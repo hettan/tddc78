@@ -36,12 +36,12 @@ program laplsolv
 
 
   !Check arguments
-!  if(iargc() /= 1) then
-!     call getarg(0, arg)
-!     print *, 'usage ',arg,' num_proc'
-!     stop
-!  end if
-
+  !if(iargc() /= 1) then
+  !   call getarg(0, arg)
+  !   print *, 'usage ',arg,' num_proc'
+  !   stop
+  !end if
+  
   !set num_threads
   !call getarg(1, arg)
   !read(arg, '(i10)' ) num_threads
@@ -65,6 +65,8 @@ program laplsolv
   !$omp do schedule ( STATIC, 1 )
   do k=1, maxiter
      thread_id = omp_get_thread_num()
+
+     write(unit=*,fmt=*) 'k=',k
 
      tmp1=T(1:n,0)
      error=0.0D0
