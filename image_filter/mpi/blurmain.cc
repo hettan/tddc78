@@ -115,7 +115,7 @@ void blurfilter(const int xsize, const int ysize,
 
   //Allocate mem for the radius as well.
   pixel* local_dst = new pixel[local_size+(2*local_radius_size)];
-  cout << "7" << endl;
+
   MPI_Scatter(src, local_size*pixel_type_size, pixel_type, local_src,
 	      local_size*pixel_type_size, pixel_type, root, com);
 
