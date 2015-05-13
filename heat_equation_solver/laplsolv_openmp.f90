@@ -25,8 +25,8 @@ program laplsolv
   integer, dimension(n+1) :: row_next_iteration
 
   ! Set boundary conditions and initial values for the unknowns
-  T=0.0D0
-  T(0:n+1 , 0)     = 1.0D0
+  T=0.0D0 
+ T(0:n+1 , 0)     = 1.0D0
   T(0:n+1 , n+1)   = 1.0D0
   T(n+1   , 0:n+1) = 2.0D0
 
@@ -34,21 +34,21 @@ program laplsolv
   ! Solve the linear system of equations using the Jacobi method
   call cpu_time(t0)
 
-  ! Should be set on argv later
-  call omp_set_num_threads(num_threads)
 
   !Check arguments
-  if(iargc() /= 1) then
-     call getarg(0, arg)
-     print *, 'usage ',arg,' num_proc'
-     stop
-  end if
-
-  !set num_threads
-  call getarg(1, arg)
-  read(arg, '(i10)' ) num_threads
-
+  !if(iargc() /= 1) then
+  !   call getarg(0, arg)
+  !   print *, 'usage ',arg,' num_proc'
+  !   stop
+  !end if
   
+  !set num_threads
+  !call getarg(1, arg)
+  !read(arg, '(i10)' ) num_threads
+
+  !call omp_set_num_threads(num_threads)
+  
+
   !Init array with the first iteration
   !$omp parallel default(private) shared(row_next_iteration)
   !$omp do
@@ -65,6 +65,8 @@ program laplsolv
   !$omp do schedule ( STATIC, 1 )
   do k=1, maxiter
      thread_id = omp_get_thread_num()
+
+     write(unit=*,fmt=*) 'k=',k
 
      tmp1=T(1:n,0)
      error=0.0D0

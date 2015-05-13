@@ -2,6 +2,7 @@
 #include <mpi.h>
 #include <time.h>
 #include <math.h>
+#include <sstream>
 
 #include "coordinate.h"
 #include "physics.h"
@@ -12,6 +13,9 @@
 #define BOX_WIDTH 10000
 #define BOX_HEIGHT 10000
 #define MAX_TIME 10.0
+
+//Triolith doesn't have c++11 lib in mpi version
+#define nullptr NULL
 
 using namespace std;
 
@@ -140,8 +144,7 @@ int main(int argc, char** argv)
 
   //Calculate pressure
   MPI_Reduce(&local_pressure, &pressure, 1, MPI_DOUBLE, MPI_SUM, root, g_com);
-  
-  if(myid == 0){
+  if(myid == root){
     clock_gettime(CLOCK_REALTIME, &etime);
     const int delta_time = ((etime.tv_sec - stime.tv_sec) 
 			    + 1e-9*(etime.tv_nsec - stime.tv_nsec));
