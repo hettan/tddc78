@@ -9,8 +9,7 @@ using namespace std;
 namespace std{
   ostream& operator<<(ostream& os, particle_t *p){
     os << "x=" << p->pcord.x << ", y=" << p->pcord.y 
-       << ", vx=" << p->pcord.vx << ", vy=" << p->pcord.vy
-       << ", created=" << p->created << ", adr=" << (void*)p;
+       << ", vx=" << p->pcord.vx << ", vy=" << p->pcord.vy;
     return os;
   }
   ostream& operator<<(ostream& os, const particle_t& p){
@@ -132,7 +131,6 @@ void recv_from_neighbour(ParticleList* particles,
   for(int i=0; i<count; i++){
     p = static_cast<particle_t*>(malloc(sizeof(particle_t)));
     p[0] = *(buff+i);
-    p->created = -1;
     particles->insert(p);
   }
   free(buff);

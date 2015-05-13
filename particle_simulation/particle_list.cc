@@ -41,8 +41,6 @@ void ParticleList::create_random_particles(const long n,
     p->pcord.vx = r*cos(v);
     p->pcord.vy = r*sin(v);
 
-    p->created = myid;
-
     insert(p);
   }
 }

@@ -27,7 +27,6 @@ struct particle {
   int ptype;        /* Used to simulate mixing of gases */ 
   particle* prev;
   particle* next;
-  int created;
 };
 
 typedef struct particle particle_t;
