@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   MPI_Reduce(&local_pressure, &pressure, 1, MPI_DOUBLE, MPI_SUM, root, g_com);
   if(myid == root){
     clock_gettime(CLOCK_REALTIME, &etime);
-    const int delta_time = ((etime.tv_sec - stime.tv_sec) 
+    const double delta_time = ((etime.tv_sec - stime.tv_sec) 
 			    + 1e-9*(etime.tv_nsec - stime.tv_nsec));
     cout << "Calculation took: " <<  delta_time << "secs" << endl;
 

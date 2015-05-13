@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 
 #include "util.hh"
 #include "physics.h"
@@ -25,6 +26,18 @@ namespace std{
     }
     return os;
   }
+}
+
+string to_string(const int i){
+  ostringstream oss;
+  oss << i;
+  return oss.str();
+}
+
+int to_int(const string str){
+  int i;
+  istringstream (str) >> i;
+  return i;
 }
 
 //Check for collition of other particels and walls, returning the wall_collide pressure
@@ -90,7 +103,7 @@ void send_to_neighbour(ParticleList& send_list,
   const int count = send_list.get_size();
 
   //The unique tag
-  const int tag = stoi(to_string(dst) + to_string(myid));
+  const int tag = to_int(to_string(dst) + to_string(myid));
   const int size = count * sizeof(particle_t);
   //cout << myid << ": sending " << count << " to " << dst << endl;
   MPI_Isend(buff, size, MPI_BYTE, dst, tag, com, requests);
@@ -101,7 +114,7 @@ void recv_from_neighbour(ParticleList* particles,
 			  MPI_Comm& com){
   
   //The unique tag
-  const int tag = stoi(to_string(myid) + to_string(from));
+  const int tag = to_int(to_string(myid) + to_string(from));
 
   MPI_Status status;
   MPI_Probe( from, tag, com, &status);
