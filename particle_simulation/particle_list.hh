@@ -8,7 +8,7 @@
 
 using namespace std;
 
-//#define nullptr NULL
+#define nullptr NULL
 #define MAX_SEND_BUFF_SIZE 100000
 
 class ParticleList

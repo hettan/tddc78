@@ -1,3 +1,4 @@
+#include <string>
 
 #include "util.hh"
 #include "physics.h"

@@ -6,6 +6,7 @@
 #include "definitions.h"
 #include "particle_list.hh"
 
+#define nullptr NULL
 
 namespace std{
   ostream& operator<<(ostream& os, particle_t *p);
