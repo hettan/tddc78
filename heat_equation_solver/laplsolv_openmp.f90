@@ -32,22 +32,7 @@ program laplsolv
 
 
   ! Solve the linear system of equations using the Jacobi method
-  call cpu_time(t0)
-
-
-  !Check arguments
-  !if(iargc() /= 1) then
-  !   call getarg(0, arg)
-  !   print *, 'usage ',arg,' num_proc'
-  !   stop
-  !end if
-  
-  !set num_threads
-  !call getarg(1, arg)
-  !read(arg, '(i10)' ) num_threads
-
-  !call omp_set_num_threads(num_threads)
-  
+  t0 = omp_get_wtime()
 
   !Init array with the first iteration
   !$omp parallel default(private) shared(row_next_iteration)
@@ -65,8 +50,6 @@ program laplsolv
   !$omp do schedule ( STATIC, 1 )
   do k=1, maxiter
      thread_id = omp_get_thread_num()
-
-     write(unit=*,fmt=*) 'k=',k
 
      tmp1=T(1:n,0)
      error=0.0D0
@@ -97,8 +80,8 @@ program laplsolv
   !$omp end do
   !$omp end parallel
 
-  call cpu_time(t1)
-
+  t1 = omp_get_wtime()
+  
   write(unit=*,fmt=*) 'Time:',t1-t0,'Number of Iterations:',iterations
   write(unit=*,fmt=*) 'Temperature of element T(1,1)  =',T(1,1)
 

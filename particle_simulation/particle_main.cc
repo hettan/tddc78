@@ -56,7 +56,8 @@ int main(int argc, char** argv)
   if(myid == num_proc - 1){
     local_num_particles += num_particles%num_proc;
   }
-  
+
+  //Init the particle lists and create particles with random location on the local grid
   ParticleList* particles = new ParticleList();
   particles->create_random_particles(local_num_particles, local_xsize, local_ysize);
   ParticleList* collitions = new ParticleList();
@@ -145,7 +146,7 @@ int main(int argc, char** argv)
 
   //Calculate pressure
   MPI_Reduce(&local_pressure, &pressure, 1, MPI_DOUBLE, MPI_SUM, root, g_com);
-  cout << myid << ": local=" << local_pressure << ", press=" << pressure << endl;
+
   if(myid == root){
     clock_gettime(CLOCK_REALTIME, &etime);
     const double delta_time = ((etime.tv_sec - stime.tv_sec) 
