@@ -69,8 +69,8 @@ int main(int argc, char** argv)
   MPI_Request requests[4];
 
   //Setup the wall
-  float pressure = 0.0;
-  float local_pressure = 0.0;
+  double pressure = 0.0;
+  double local_pressure = 0.0;
   cord_t local_wall;
   set_local_wall(neighbours, local_xsize, local_ysize, local_wall);
 
@@ -79,7 +79,6 @@ int main(int argc, char** argv)
   while(time_steps < MAX_TIME){
     
     // - for all paricles do    
-    int add_pressure;
     particle_t* p = particles->get_first();
 
     int counter = 0;
@@ -96,6 +95,7 @@ int main(int argc, char** argv)
 	 collitions list instead. If false, the pixel will be moved. */
       particle* collided_particle;
       if( (collided_particle = get_collition(p)) ){
+	local_pressure += wall_collide(&(collided_particle->pcord), local_wall);	
 	
 	//Skip next if it collided with p
 	if(collided_particle == next){
@@ -107,14 +107,15 @@ int main(int argc, char** argv)
 	  particles->remove(collided_particle);
 	  collitions->insert(collided_particle);
 	}
+	local_pressure += wall_collide(&(p->pcord), local_wall);
       }   
       else {
 	feuler(&(p->pcord), time_steps);
       }
       
       // - - Check for wall interaction and add the momentum
-      add_pressure = wall_collide(&(p->pcord), local_wall);      
-      local_pressure += add_pressure;
+      local_pressure += wall_collide(&(p->pcord), local_wall);      
+    
       if(! prepare_send(p, particles_send, particles,
 			local_xsize, local_ysize, neighbours)){
 	
@@ -144,6 +145,7 @@ int main(int argc, char** argv)
 
   //Calculate pressure
   MPI_Reduce(&local_pressure, &pressure, 1, MPI_DOUBLE, MPI_SUM, root, g_com);
+  cout << myid << ": local=" << local_pressure << ", press=" << pressure << endl;
   if(myid == root){
     clock_gettime(CLOCK_REALTIME, &etime);
     const double delta_time = ((etime.tv_sec - stime.tv_sec) 
