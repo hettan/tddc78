@@ -23,6 +23,7 @@ namespace std{
   }
 }
 
+//Init the custom MPI_Type for sending
 void init_pixel_type(MPI_Datatype& pixel_type)
 {
   const int struct_size = 3;
@@ -36,6 +37,7 @@ void init_pixel_type(MPI_Datatype& pixel_type)
   MPI_Type_commit(&pixel_type);
 }
 
+//Calculation of gauss weights in parallel
 void get_gauss_weights(const int n, double* work){
   const MPI_Comm com = MPI_COMM_WORLD;
   const int root = 0; //root process
@@ -68,6 +70,7 @@ void get_gauss_weights(const int n, double* work){
     displs[i] = i * (n/num_proc);
   }
   
+  //Receive all the work weights
   MPI_Allgatherv(&work_proc, work_size_proc, MPI_DOUBLE, work,
   		 recv_count, displs, MPI_DOUBLE, com);  
 }
@@ -94,7 +97,7 @@ void blurfilter(const int xsize, const int ysize,
   const int myid = MPI::COMM_WORLD.Get_rank();  
   const int num_proc = MPI::COMM_WORLD.Get_size();
 
-  //pixeltype
+  //MPI pixel type
   MPI_Datatype pixel_type;
   init_pixel_type(pixel_type);
   const int pixel_type_size = 3;
@@ -131,7 +134,7 @@ void blurfilter(const int xsize, const int ysize,
     const int leftover_size = (ysize % num_proc)*xsize;
 
     MPI_Recv(local_src+local_size-leftover_size, leftover_size*pixel_type_size,
-	     pixel_type, 0, 0, com, &status);
+	     pixel_type, root, 0, com, &status);
   }    
   
   //Horizontal blur
@@ -191,7 +194,7 @@ void blurfilter(const int xsize, const int ysize,
 
   //Set the min-max bounderies
   int min, max;
-  if(myid == 0){
+  if(myid == root){
     min=radius;
     max=row_interval + (2*radius);
   }
@@ -265,7 +268,7 @@ int main(int argc, char** argv)
 
   int radius, xsize, ysize, colmax;
   pixel *src = new pixel[MAX_PIXELS];
-  if(myid == 0){
+  if(myid == root){
     /* Take care of the arguments */
 
     if (argc != 4) {
@@ -291,18 +294,18 @@ int main(int argc, char** argv)
   }
   
   //Notify all processes about radius
-  MPI_Bcast(&radius, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&radius, 1, MPI_INT, root, com);
 
   /* filter */
   double* weights= new double[radius];
   get_gauss_weights(radius, weights);
 
   //Broadcast the variables from root to the other processes
-  MPI_Bcast(&xsize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&ysize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&xsize, 1, MPI_INT, root, com);
+  MPI_Bcast(&ysize, 1, MPI_INT, root, com);
 
   struct timespec stime, etime;
-  if(myid == 0){
+  if(myid == root){
     cout << "Calling filter\n" << endl;
     clock_gettime(CLOCK_REALTIME, &stime);
   }
@@ -311,7 +314,7 @@ int main(int argc, char** argv)
 
   clock_gettime(CLOCK_REALTIME, &etime);
 
-  if(myid == 0){
+  if(myid == root){
     const double delta_time = ((etime.tv_sec - stime.tv_sec) 
 			    + 1e-9*(etime.tv_nsec - stime.tv_nsec));
     cout << "Filtering took: " <<  delta_time << "secs" << endl;

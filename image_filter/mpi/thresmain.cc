@@ -12,6 +12,7 @@ struct pixel
   unsigned char r,g,b;
 };
 
+//Init the custom MPI_Type for sending
 void init_pixel_type(MPI_Datatype& pixel_type)
 {
   const int struct_size = 3;
@@ -115,13 +116,16 @@ int main (int argc, char ** argv) {
     disp[i] = disp_size;
     disp_size += send_count[i];
   }
-    
+
+  //Distribute the work
   MPI_Scatterv(src, send_count, disp, pixel_type,
 	       local_src, send_count[myid], pixel_type, root, com);
     
   //Calculate the sum
   double local_sum = (double)get_sum(xsize, local_y, local_src);
   double sum = 0;
+
+  //Accumulate all the local sums
   MPI_Allreduce(&local_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, com);
   sum = sum/(xsize*ysize);
 
