@@ -1,5 +1,4 @@
 #include <stdlib.h>
-//#include <stdio.h>
 #include <iostream>
 #include <string.h>
 #include <time.h>
@@ -13,31 +12,35 @@
 using namespace std;
 
 #define MAX_THREADS 50
+#define MAX_RAD 1000
 
+//Returns the start y for given thread
 int get_y_start(const int thread_id, const int num_threads, const int ysize) {
   return thread_id * (ysize/num_threads);
 }
 
-//add the leftoverpixels to the last thread
+//Returns the end y for given thread
 int get_y_end(const int thread_id, const int num_threads, const int ysize) {
   int y_end = (thread_id+1) * (ysize/num_threads);
+
+  //Add the leftoverpixels to the last thread
   if(thread_id == num_threads-1)
     y_end += ysize%num_threads;
+
   return y_end;
 }
 
 int main (int argc, char ** argv) {
   int radius;
   int xsize, ysize, colmax;
+
   pixel* src = new pixel[MAX_PIXELS];
   pixel* dst = new pixel[MAX_PIXELS];
-  struct timespec stime, etime;
-#define MAX_RAD 1000
-
   double w[MAX_RAD];
 
-  /* Take care of the arguments */
+  struct timespec stime, etime;
 
+  /* Take care of the arguments */
   if (argc != 5) {
     cerr << "Usage: " << argv[0] <<" radius threads infile outfile" << endl;
     return 1;
@@ -104,10 +107,7 @@ int main (int argc, char ** argv) {
       cout << "Error in thread join: " << rc << endl;
       return 7;
     }
-    
-    //cout << "Thread " << i << " done, status=" << status << endl;
   }
-
   
   //Start the threads again but this time with blurfilter_y
   for(int i=0; i<num_threads; i++){

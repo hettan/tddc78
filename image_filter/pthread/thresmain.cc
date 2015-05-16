@@ -12,15 +12,19 @@ using namespace std;
 
 #define MAX_THREADS 50
 
+//Returns the start y for given thread
 int get_y_start(const int thread_id, const int num_threads, const int ysize) {
   return thread_id * (ysize/num_threads);
 }
 
-//add the leftoverpixels to the last thread
+//Returns the end y for given thread
 int get_y_end(const int thread_id, const int num_threads, const int ysize) {
   int y_end = (thread_id+1) * (ysize/num_threads);
+
+  //Add the leftoverpixels to the last thread
   if(thread_id == num_threads-1)
     y_end += ysize%num_threads;
+
   return y_end;
 }
 
@@ -30,7 +34,6 @@ int main (int argc, char ** argv) {
   struct timespec stime, etime;
     
   /* Take care of the arguments */
-
   if (argc != 4) {
     cerr << "Usage: " << argv[0] <<" threads infile outfile" << endl;
     return 1;
@@ -50,7 +53,6 @@ int main (int argc, char ** argv) {
     cerr << "Number of threads need to be higher than zero" << endl;
     return 4;
   }
-
 
   cout << "Has read the image, calling filter" << endl;
 
@@ -84,8 +86,6 @@ int main (int argc, char ** argv) {
       cout << "Error in thread join: " << rc << endl;
       return 7;
     }
-    
-    //    cout << "Thread " << i << " done, status=" << status << endl;
   }
 
   clock_gettime(CLOCK_REALTIME, &etime);
